@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
 
-from fetch_trends import fetch_top_trends
+from fetch_trends import fetch_top_trends, hashtag_trend_info, music_trend_info
 from fetch_data import fetch_top_influencers, user, user_videos, hashtag, music
 from format import human_format
 
@@ -132,6 +132,36 @@ def display_user_data(username_):
 
 
 def display_hashtag_data(tag_):
+
+    country = 'France'
+    period = '120'
+
+    stats, trend, region_info, related_hashtags = hashtag_trend_info(tag_, country, period)
+
+    st.header('Post stats', anchor=None)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.text_area(
+            'Posts',
+            f'Last {period} days, {country}\n\n : {stats[0]}'
+            f'Overall Views : {stats[1]}',
+            height=100)
+    with col2:
+        st.text_area(
+            'Posts',
+            f'Last {period} days, {country}\n\n : {stats[2]}'
+            f'Overall Views : {stats[3]}',
+            height=100)
+
+    st.header('Trend analysis', anchor=None)
+    st.write(trend)
+
+    st.header('Region info', anchor=None)
+    st.dataframe(region_info)
+
+    st.header('Related hashtag', anchor=None)
+    st.dataframe(related_hashtags)
+
     st.header('TikTok list', anchor=None)
     df_hash = hashtag(tag_)
     df_hash = pd.DataFrame.from_records(df_hash)
@@ -172,8 +202,24 @@ def display_hashtag_data(tag_):
 
 
 def display_music_data(music_):
+
     df_music = music(music_)
     df_music = pd.DataFrame.from_dict(df_music, orient='index')
+
+    music_tag = f'{df_music[0].title}-{df_music[0].id}'
+    country = 'France'
+    period = '120'
+
+    trend, region_info, music_info = music_trend_info(music_tag, country, period)
+
+    st.header('Trend analysis', anchor=None)
+    st.write(trend)
+
+    st.header('Region info', anchor=None)
+    st.dataframe(region_info)
+
+    st.header('Related hashtag', anchor=None)
+    st.dataframe(music_info)
 
     st.header('Music info', anchor=None)
     col1, col2 = st.columns(2)

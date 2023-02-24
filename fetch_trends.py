@@ -65,3 +65,57 @@ def fetch_top_trends():
     tiktok = tiktok[['id', 'title', 'countryCode', 'duration', 'itemUrl', 'cover', 'rank']].set_index('rank')
 
     return hashtag, music, creator, tiktok
+
+
+def hashtag_trend_info(hashtag, country, period):
+
+    URL = f"https://ads.tiktok.com/business/creativecenter/hashtag/{hashtag}/pc/en?countryCode={country}&period={period}"
+    page = requests.get(URL)
+
+    soup = BeautifulSoup(page.text)
+
+    stats = [e.text for e in soup.find_all('span', {'class': 'title--gvWft title--eM6Wz'})]
+    trend = soup.find('span', {'class': 'bannerDesc--CORuD bannerDesc--McarQ'}).text
+    region_info = []
+    region = soup.find_all('div', {'class': 'content-wrap-item--P88lK content-wrap-item--zMoGF'})
+    for r in region:
+        reg = {'country': r.find('span', {
+            'class': 'content-wrap-item-label-wrap-label--33mdU content-wrap-item-label-wrap-label--uojf9'}).text,
+               'count': r.find('span', {
+                   'class': 'content-wrap-item-value-wrap-value--wtBCS content-wrap-item-value-wrap-value--q-PNh'}).text}
+        region_info.append(reg)
+    related_hashtags = [h.find('span').text for h in soup.find_all('div', {'class': 'mtitle--EtrCY mtitle--mJqfP'})]
+
+    region_info = pd.DataFrame(region_info)
+    related_hashtags = pd.DataFrame(related_hashtags)
+
+    return stats, trend, region_info, related_hashtags
+
+
+def music_trend_info(song, country, period):
+
+    URL = f"https://ads.tiktok.com/business/creativecenter/song/{song}/pc/en?countryCode={country}&period={period}"
+    page = requests.get(URL)
+
+    soup = BeautifulSoup(page.text)
+
+    trend = soup.find('span', {'class': 'bannerDesc--yWTb+ bannerDesc--94fZk'}).text
+    region_info = []
+    region = soup.find_all('div', {'class': 'content-wrap-item--P88lK content-wrap-item--zMoGF'})
+    for r in region:
+        reg = {'country': r.find('span', {
+            'class': 'content-wrap-item-label-wrap-label--33mdU content-wrap-item-label-wrap-label--uojf9'}).text,
+               'count': r.find('span', {
+                   'class': 'content-wrap-item-value-wrap-value--wtBCS content-wrap-item-value-wrap-value--q-PNh'}).text}
+        region_info.append(reg)
+    sounds = soup.find_all('div', {'class': 'soundItem--OBPhW soundItem--IE6BO'})
+    music_info = []
+    for s in sounds:
+        music = {'name': s.find('span', {'class': 'soundItem-desc-title--Zu0RR soundItem-desc-title--skY+6'}).text,
+                 'artist': s.find('span', {'class': 'soundItem-desc-author--QMtpm soundItem-desc-author--x-lDq'}).text}
+        music_info.append(music)
+
+    region_info = pd.DataFrame(region_info)
+    music_info = pd.DataFrame(music_info)
+
+    return trend, region_info, music_info
