@@ -1,10 +1,13 @@
-import subprocess
 import json
+import subprocess
+
+import ast
 import pandas as pd
-import requests,ast, re
+import re
+import requests
 from bs4 import BeautifulSoup
 
-js_file = './call.js'
+js_file = 'scrap_tiktok.js'
 
 
 def fetch_top_influencers(country_code='fr'):
@@ -17,11 +20,11 @@ def fetch_top_influencers(country_code='fr'):
     Returns
     -------
     df_influencers : list
-        dataframe of influencers scrapped on designated website (Tokfleunce)
+        dataframe of influencers scrapped on designated website
     """
 
-    URL = "https://tokfluence.com/top?limit=100&country=" + country_code
-    page = requests.get(URL)
+    url = "https://tokfluence.com/top?limit=100&country=" + country_code
+    page = requests.get(url)
 
     # fetch list of influencers on main page website
     soup = BeautifulSoup(page.content)

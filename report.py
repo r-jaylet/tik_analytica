@@ -27,7 +27,7 @@ def display_influ_data(country):
 
     st.download_button(
         label="Download data as CSV",
-        data=df_influ.to_csv().encode('utf-8'),
+        data=df_influ,
         file_name=f'df_{country}.csv',
     )
 
@@ -95,9 +95,7 @@ def display_user_data(username_):
         st.area_chart(list(df_user_videos['playCount']))
     with col2:
         st.subheader('Engagement rate per video', anchor=None)
-        st.area_chart(
-            list(df_user_videos['shareCount'] * df_user_videos['likesCount'] * df_user_videos['commentCount']) /
-            df_user_videos['playCount'])
+        st.area_chart(df_user_videos['shareCount'] * df_user_videos['likesCount'] / df_user_videos['playCount'])
 
     words = df_user_videos.description.str.split(expand=True).stack().value_counts().keys()
     st.header('Main hashtags used', anchor=None)
@@ -248,7 +246,8 @@ def display_music_data(music_):
 st.set_page_config(page_title='Data Search', page_icon=':bar_chart:', layout='wide')
 
 # Add the three buttons
-tab1, tab2, tab3, tab4, tab5 = st.tabs(['Top trends', 'Top influencers', 'User search', 'Hashtag search', 'Music search'])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(['Top trends', 'Top influencers',
+                                        'User search', 'Hashtag search', 'Music search'])
 
 with tab1:
     st.title('Top trends')
@@ -280,7 +279,7 @@ with tab4:
         'Search for hashtag',
         placeholder=' example : jazz, rap...',
         help='Type in hashtag of a specific challenge')
-    if st.button('Search hastag'):
+    if st.button('Search hashtag'):
         display_hashtag_data(tag_type)
 
 with tab5:

@@ -1,13 +1,12 @@
-import subprocess
 import json
 import pandas as pd
-import requests, ast, re
+import requests
 from bs4 import BeautifulSoup
 
 
 def fetch_top_trends():
-    URL = f"https://ads.tiktok.com/business/creativecenter/trends/home/pc/en"
-    page = requests.get(URL)
+    url = f"https://ads.tiktok.com/business/creativecenter/trends/home/pc/en"
+    page = requests.get(url)
     soup = BeautifulSoup(page.text)
 
     trending_hashtag = []
@@ -43,24 +42,22 @@ def fetch_top_trends():
     if 'data' in json_content.keys():
         json_content = json_content['data']
 
-    hashtags_content = json_content['hashtags']
-    tiktoks_content = json_content['tiktoks']
-    trendMusic_content = json_content['trendMusic']
-    creatorList_content = json_content['creatorList']
+    hashtag_content = json_content['hashtags']
+    music_content = json_content['trendMusic']
+    creator_content = json_content['creatorList']
+    tiktok_content = json_content['tiktoks']
 
-    hashtag = hashtag.merge(pd.DataFrame.from_records(hashtags_content), left_index=True, right_index=True)
-    music = music.merge(pd.DataFrame.from_records(trendMusic_content), left_index=True, right_index=True)
-    creator = creator.merge(pd.DataFrame.from_records(creatorList_content), left_index=True, right_index=True)
-    tiktok = pd.DataFrame.from_records(tiktoks_content)
+    hashtag = hashtag.merge(pd.DataFrame.from_records(hashtag_content), left_index=True, right_index=True)
+    music = music.merge(pd.DataFrame.from_records(music_content), left_index=True, right_index=True)
+    creator = creator.merge(pd.DataFrame.from_records(creator_content), left_index=True, right_index=True)
+    tiktok = pd.DataFrame.from_records(tiktok_content)
 
     hashtag['creators_examples'] = hashtag.apply(lambda x: ([e['nickName'] for e in x['creators']]), axis=1)
-    hashtag = hashtag[['rank', 'tag', 'posts_count', 'views_count', 'creators_examples']].set_index(
-        'rank')
-    music = music[
-        ['rank', 'music', 'author', 'countryCode', 'cover', 'link', 'urlTitle', 'songId']].set_index('rank')
+    hashtag = hashtag[['rank', 'tag', 'posts_count', 'views_count', 'creators_examples']].set_index('rank')
+    music = music[['rank', 'music', 'author', 'countryCode', 'cover', 'link', 'urlTitle', 'songId']].set_index('rank')
     creator['rank'] = [1, 2, 3, 4, 5]
-    creator = creator[
-        ['creator', 'followers_count', 'likes_count', 'countryCode', 'userId', 'ttLink', 'rank']].set_index('rank')
+    creator = creator[['creator', 'followers_count', 'likes_count',
+                       'countryCode', 'userId', 'ttLink', 'rank']].set_index('rank')
     tiktok['rank'] = [1, 2, 3, 4, 5]
     tiktok = tiktok[['id', 'title', 'countryCode', 'duration', 'itemUrl', 'cover', 'rank']].set_index('rank')
 
@@ -68,9 +65,9 @@ def fetch_top_trends():
 
 
 def hashtag_trend_info(hashtag, country, period):
-
-    URL = f"https://ads.tiktok.com/business/creativecenter/hashtag/{hashtag}/pc/en?countryCode={country}&period={period}"
-    page = requests.get(URL)
+    url = f'https://ads.tiktok.com/business/creativecenter/hashtag/{hashtag}/pc/en' \
+          f'?countryCode={country}&period={period}'
+    page = requests.get(url)
 
     soup = BeautifulSoup(page.text)
 
@@ -79,10 +76,10 @@ def hashtag_trend_info(hashtag, country, period):
     region_info = []
     region = soup.find_all('div', {'class': 'content-wrap-item--P88lK content-wrap-item--zMoGF'})
     for r in region:
-        reg = {'country': r.find('span', {
-            'class': 'content-wrap-item-label-wrap-label--33mdU content-wrap-item-label-wrap-label--uojf9'}).text,
-               'count': r.find('span', {
-                   'class': 'content-wrap-item-value-wrap-value--wtBCS content-wrap-item-value-wrap-value--q-PNh'}).text}
+        reg = {'country': r.find('span', {'class': 'content-wrap-item-label-wrap-label--33mdU '
+                                                   'content-wrap-item-label-wrap-label--uojf9'}).text,
+               'count': r.find('span', {'class': 'content-wrap-item-value-wrap-value--wtBCS '
+                                                 'content-wrap-item-value-wrap-value--q-PNh'}).text}
         region_info.append(reg)
     related_hashtags = [h.find('span').text for h in soup.find_all('div', {'class': 'mtitle--EtrCY mtitle--mJqfP'})]
 
@@ -93,9 +90,8 @@ def hashtag_trend_info(hashtag, country, period):
 
 
 def music_trend_info(song, country, period):
-
-    URL = f"https://ads.tiktok.com/business/creativecenter/song/{song}/pc/en?countryCode={country}&period={period}"
-    page = requests.get(URL)
+    url = f"https://ads.tiktok.com/business/creativecenter/song/{song}/pc/en?countryCode={country}&period={period}"
+    page = requests.get(url)
 
     soup = BeautifulSoup(page.text)
 
@@ -104,9 +100,11 @@ def music_trend_info(song, country, period):
     region = soup.find_all('div', {'class': 'content-wrap-item--P88lK content-wrap-item--zMoGF'})
     for r in region:
         reg = {'country': r.find('span', {
-            'class': 'content-wrap-item-label-wrap-label--33mdU content-wrap-item-label-wrap-label--uojf9'}).text,
+            'class': 'content-wrap-item-label-wrap-label--33mdU'
+                     'content-wrap-item-label-wrap-label--uojf9'}).text,
                'count': r.find('span', {
-                   'class': 'content-wrap-item-value-wrap-value--wtBCS content-wrap-item-value-wrap-value--q-PNh'}).text}
+                   'class': 'content-wrap-item-value-wrap-value--wtBCS'
+                            'content-wrap-item-value-wrap-value--q-PNh'}).text}
         region_info.append(reg)
     sounds = soup.find_all('div', {'class': 'soundItem--OBPhW soundItem--IE6BO'})
     music_info = []

@@ -1,0 +1,7 @@
+{
+  "name": "tik_analytica",
+  "version": "1.0.0",
+  "dependencies": {
+    "tiktok-scraper-ts": "^1.4.1"
+  }
+}

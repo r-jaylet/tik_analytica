@@ -1,5 +1,4 @@
 const { TTScraper } = require("tiktok-scraper-ts");
-var fs = require('fs');
 
 const TikTokScraper = new TTScraper();
 
