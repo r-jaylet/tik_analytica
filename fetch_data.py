@@ -1,7 +1,7 @@
 import json
 import subprocess
 
-js_file = 'scrap_tiktok.js'
+js_file = './scrap_tiktok'
 
 
 def user(username):

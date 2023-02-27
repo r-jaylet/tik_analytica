@@ -1,3 +1,4 @@
+import numpy as np
 import json
 import pandas as pd
 import requests
@@ -21,9 +22,9 @@ def fetch_top_trends():
     tiktok : dataframe
         dataframe of top trending tiktoks scrapped on ads TikTok site
     """
-    url = f"https://ads.tiktok.com/business/creativecenter/trends/home/pc/en"
+    url = f'https://ads.tiktok.com/business/creativecenter/trends/home/pc/en'
     page = requests.get(url)
-    soup = BeautifulSoup(page.text)
+    soup = BeautifulSoup(page.text, features='lxml')
 
     trending_hashtag = []
     trending_music = []
@@ -75,17 +76,17 @@ def fetch_top_trends():
     # format info
     hashtag['creators_examples'] = hashtag.apply(lambda x: ([e['nickName'] for e in x['creators']]), axis=1)
     hashtag = hashtag[['rank', 'tag', 'posts_count', 'views_count', 'creators_examples']].set_index('rank')
-    music = music[['rank', 'music', 'author', 'countryCode', 'cover', 'link', 'urlTitle', 'songId']].set_index('rank')
-    creator['rank'] = [1, 2, 3, 4, 5]
+    music = music[['rank', 'cover', 'music', 'author', 'countryCode', 'songId', 'link']].set_index('rank')
+    creator['rank'] = list(np.arange(len(creator)))
     creator = creator[['creator', 'followers_count', 'likes_count',
                        'countryCode', 'userId', 'ttLink', 'rank']].set_index('rank')
-    tiktok['rank'] = [1, 2, 3, 4, 5]
+    tiktok['rank'] = list(np.arange(len(tiktok)))
     tiktok = tiktok[['id', 'title', 'countryCode', 'duration', 'itemUrl', 'cover', 'rank']].set_index('rank')
 
     return hashtag, music, creator, tiktok
 
 
-def hashtag_trend_info(hashtag, country, period):
+def hashtag_trend_info(hashtag, country_code, period):
     """
     Returns information on ads TikTok site of a designated hashtag
 
@@ -93,8 +94,8 @@ def hashtag_trend_info(hashtag, country, period):
     -------
     hashtag : string
         name of a challenge
-    country : string
-        name of a country
+    country_code : string
+        id of a country (FR: France)
     period : string
         length of the period of study of the challenge in days (can be : 30, 120, 360)
     Returns
@@ -109,9 +110,9 @@ def hashtag_trend_info(hashtag, country, period):
         information on related hashtags of the hashtag
     """
     url = f'https://ads.tiktok.com/business/creativecenter/hashtag/{hashtag}/pc/en' \
-          f'?countryCode={country}&period={period}'
+          f'?countryCode={country_code}&period={period}'
     page = requests.get(url)
-    soup = BeautifulSoup(page.text)
+    soup = BeautifulSoup(page.text, features='lxml')
 
     stats = [e.text for e in soup.find_all('span', {'class': 'title--gvWft title--eM6Wz'})]
     trend = soup.find('span', {'class': 'bannerDesc--CORuD bannerDesc--McarQ'}).text
@@ -131,7 +132,7 @@ def hashtag_trend_info(hashtag, country, period):
     return stats, trend, region_info, related_hashtags
 
 
-def music_trend_info(song, country, period):
+def music_trend_info(song, country_code, period):
     """
     Returns information on ads TikTok site of a designated music
 
@@ -139,7 +140,7 @@ def music_trend_info(song, country, period):
     -------
     song : string
         name and unique_id of a music
-    country : string
+    country_code : string
         name of a country
     period : string
         length of the period of study of the challenge in days (can be : 30, 120, 360)
@@ -152,19 +153,19 @@ def music_trend_info(song, country, period):
     music_info : list
         information on related music of the music
     """
-    url = f"https://ads.tiktok.com/business/creativecenter/song/{song}/pc/en?countryCode={country}&period={period}"
+    url = f"https://ads.tiktok.com/business/creativecenter/song/{song}/pc/en?countryCode={country_code}&period={period}"
     page = requests.get(url)
-    soup = BeautifulSoup(page.text)
+    soup = BeautifulSoup(page.text, features='lxml')
 
     trend = soup.find('span', {'class': 'bannerDesc--yWTb+ bannerDesc--94fZk'}).text
     region_info = []
     region = soup.find_all('div', {'class': 'content-wrap-item--P88lK content-wrap-item--zMoGF'})
     for r in region:
         reg = {'country': r.find('span', {
-            'class': 'content-wrap-item-label-wrap-label--33mdU'
+            'class': 'content-wrap-item-label-wrap-label--33mdU '
                      'content-wrap-item-label-wrap-label--uojf9'}).text,
                'count': r.find('span', {
-                   'class': 'content-wrap-item-value-wrap-value--wtBCS'
+                   'class': 'content-wrap-item-value-wrap-value--wtBCS '
                             'content-wrap-item-value-wrap-value--q-PNh'}).text}
         region_info.append(reg)
     sounds = soup.find_all('div', {'class': 'soundItem--OBPhW soundItem--IE6BO'})
@@ -190,14 +191,14 @@ def fetch_top_influencers(country_code='fr'):
         country of the ranking searched (France : 'fr', USA : 'us', UK = 'gb', Germany : 'de'...)
     Returns
     -------
-    df_influencers : list
+    df_influencers : dataframe
         dataframe of influencers scrapped on designated website
     """
     url = "https://tokfluence.com/top?limit=100&country=" + country_code
     page = requests.get(url)
 
     # fetch list of influencers on main page website
-    soup = BeautifulSoup(page.content)
+    soup = BeautifulSoup(page.content, features='lxml')
     json_data = soup.find('script', text=re.compile("__NEXT_DATA__"))
     data = str(json_data)[str(json_data).find('__NEXT_DATA__ = '):str(json_data).find('module={}')]
     data = data.replace('__NEXT_DATA__ = ', '')

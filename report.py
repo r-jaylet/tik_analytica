@@ -14,20 +14,54 @@ def display_trends_data():
     st.header('Trending hashtags', anchor=None)
     st.dataframe(df_hashtag)
     st.header('Trending musics', anchor=None)
-    st.dataframe(df_music)
+    col1, col2, col3, col4, col5 = st.columns(5)
+    with col1:
+        st.image(df_music.iloc[0].cover, caption=df_music.iloc[0].music, width=200)
+    with col2:
+        st.image(df_music.iloc[1].cover, caption=df_music.iloc[1].music, width=200)
+    with col3:
+        st.image(df_music.iloc[2].cover, caption=df_music.iloc[2].music, width=200)
+    with col4:
+        st.image(df_music.iloc[3].cover, caption=df_music.iloc[3].music, width=200)
+    with col5:
+        st.image(df_music.iloc[4].cover, caption=df_music.iloc[4].music, width=200)
+    st.dataframe(df_music.drop('cover', axis=1))
+
     st.header('Trending creators', anchor=None)
     st.dataframe(df_creator)
     st.header('Trending tiktoks', anchor=None)
-    st.dataframe(df_tiktok)
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.image(df_tiktok.iloc[0].cover, width=200)
+    with col2:
+        st.image(df_tiktok.iloc[1].cover, width=200)
+    with col3:
+        st.image(df_tiktok.iloc[2].cover, width=200)
+    with col4:
+        st.image(df_tiktok.iloc[3].cover, width=200)
+    st.dataframe(df_tiktok.drop('cover', axis=1))
 
 
 def display_influ_data(country):
     df_influ = fetch_top_influencers(country)
-    st.dataframe(df_influ, height=3000)
+    st.header('Top 5 influencers', anchor=None)
+    col1, col2, col3, col4, col5 = st.columns(5)
+    with col1:
+        st.image(df_influ.iloc[0].profilePicUrl, caption=df_influ.iloc[0].fullName, width=200)
+    with col2:
+        st.image(df_influ.iloc[1].profilePicUrl, caption=df_influ.iloc[1].fullName, width=200)
+    with col3:
+        st.image(df_influ.iloc[2].profilePicUrl, caption=df_influ.iloc[2].fullName, width=200)
+    with col4:
+        st.image(df_influ.iloc[3].profilePicUrl, caption=df_influ.iloc[3].fullName, width=200)
+    with col5:
+        st.image(df_influ.iloc[4].profilePicUrl, caption=df_influ.iloc[4].fullName, width=200)
+    st.header('Full ranking', anchor=None)
+    st.dataframe(df_influ.drop('profilePicUrl', axis=1), height=3000)
 
     st.download_button(
-        label="Download data as CSV",
-        data=df_influ,
+        label='Download data as CSV',
+        data=df_influ.to_csv(index=False).encode("utf-8"),
         file_name=f'df_{country}.csv',
     )
 
@@ -130,7 +164,7 @@ def display_user_data(username_):
 
 
 def display_hashtag_data(tag_):
-    country = 'France'
+    country = 'FR'
     period = '120'
     stats, trend, region_info, related_hashtags = hashtag_trend_info(tag_, country, period)
 
@@ -138,15 +172,15 @@ def display_hashtag_data(tag_):
     col1, col2 = st.columns(2)
     with col1:
         st.text_area(
-            'Posts',
-            f'Last {period} days, {country}\n\n : {stats[0]}'
-            f'Overall Views : {stats[1]}',
+            f'Posts in {country}',
+            f'Number of post in last {period} days : {stats[0]}\n\n'
+            f'Overall number of views : {stats[1]}',
             height=100)
     with col2:
         st.text_area(
-            'Posts',
-            f'Last {period} days, {country}\n\n : {stats[2]}'
-            f'Overall Views : {stats[3]}',
+            f'Posts in {country}',
+            f'Number of post in last {period} days : {stats[2]}\n\n'
+            f'Overall number of views : {stats[3]}',
             height=100)
 
     st.header('Trend analysis', anchor=None)
@@ -155,8 +189,8 @@ def display_hashtag_data(tag_):
     st.header('Region info', anchor=None)
     st.dataframe(region_info)
 
-    st.header('Related hashtag', anchor=None)
-    st.dataframe(related_hashtags)
+    st.header('Related hashtags', anchor=None)
+    st.dataframe(related_hashtags.T)
 
     st.header('TikTok list', anchor=None)
     df_hash = hashtag(tag_)
@@ -203,18 +237,9 @@ def display_music_data(music_):
     df_music = pd.DataFrame.from_dict(df_music, orient='index')
 
     music_tag = f'{df_music[0].title}-{df_music[0].id}'
-    country = 'France'
+    country = 'FR'
     period = '120'
     trend, region_info, music_info = music_trend_info(music_tag, country, period)
-
-    st.header('Trend analysis', anchor=None)
-    st.write(trend)
-
-    st.header('Region info', anchor=None)
-    st.dataframe(region_info)
-
-    st.header('Related hashtag', anchor=None)
-    st.dataframe(music_info)
 
     st.header('Music info', anchor=None)
     col1, col2 = st.columns(2)
@@ -231,6 +256,15 @@ def display_music_data(music_):
             f'duration: {df_music[0].duration}',
             height=300,
             label_visibility='collapsed')
+
+    st.header('Trend analysis', anchor=None)
+    st.write(trend)
+
+    st.header('Region info', anchor=None)
+    st.dataframe(region_info)
+
+    st.header('Related songs', anchor=None)
+    st.dataframe(music_info)
 
     st.download_button(
         label="Download data as CSV",
