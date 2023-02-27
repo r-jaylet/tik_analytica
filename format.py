@@ -1,4 +1,7 @@
 def human_format(num):
+    """
+    convert any number into easily readable number
+    """
     num = float('{:.3g}'.format(num))
     magnitude = 0
     while abs(num) >= 1000:

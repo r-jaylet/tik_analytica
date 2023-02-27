@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
 
-from fetch_trends import fetch_top_trends, hashtag_trend_info, music_trend_info
-from fetch_data import fetch_top_influencers, user, user_videos, hashtag, music
+from fetch_trends import fetch_top_trends, hashtag_trend_info, music_trend_info, fetch_top_influencers
+from fetch_data import user, user_videos, hashtag, music
 from format import human_format
 
 
@@ -130,10 +130,8 @@ def display_user_data(username_):
 
 
 def display_hashtag_data(tag_):
-
     country = 'France'
     period = '120'
-
     stats, trend, region_info, related_hashtags = hashtag_trend_info(tag_, country, period)
 
     st.header('Post stats', anchor=None)
@@ -207,7 +205,6 @@ def display_music_data(music_):
     music_tag = f'{df_music[0].title}-{df_music[0].id}'
     country = 'France'
     period = '120'
-
     trend, region_info, music_info = music_trend_info(music_tag, country, period)
 
     st.header('Trend analysis', anchor=None)
@@ -250,11 +247,13 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(['Top trends', 'Top influencers',
                                         'User search', 'Hashtag search', 'Music search'])
 
 with tab1:
+    # Top trends page
     st.title('Top trends')
     st.caption('Most important trends from the past 7 days around the world !')
     display_trends_data()
 
 with tab2:
+    # Top influencers page
     st.title('Top influencers')
     influ_type = st.text_input(
         'Search for country',
@@ -265,6 +264,7 @@ with tab2:
 
 
 with tab3:
+    # User search page
     st.title('User Data')
     user_type = st.text_input(
         'Search for user',
@@ -274,6 +274,7 @@ with tab3:
         display_user_data(user_type)
 
 with tab4:
+    # Hashtag search page
     st.title('Hashtag Data')
     tag_type = st.text_input(
         'Search for hashtag',
@@ -283,6 +284,7 @@ with tab4:
         display_hashtag_data(tag_type)
 
 with tab5:
+    # Music search page
     st.title('Music Data')
     music_type = st.text_input(
         'Search for music',

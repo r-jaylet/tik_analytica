@@ -1,10 +1,26 @@
 import json
 import pandas as pd
 import requests
+import ast
+import re
 from bs4 import BeautifulSoup
 
 
 def fetch_top_trends():
+    """
+    Returns dataframes of top trends for each category of items on TikTok
+
+    Returns
+    -------
+    hashtag : dataframe
+        dataframe of top trending hashtags scrapped on ads TikTok site
+    music : dataframe
+        dataframe of top trending musics scrapped on ads TikTok site
+    creator : dataframe
+        dataframe of top trending creators scrapped on ads TikTok site
+    tiktok : dataframe
+        dataframe of top trending tiktoks scrapped on ads TikTok site
+    """
     url = f"https://ads.tiktok.com/business/creativecenter/trends/home/pc/en"
     page = requests.get(url)
     soup = BeautifulSoup(page.text)
@@ -13,6 +29,7 @@ def fetch_top_trends():
     trending_music = []
     trending_creator = []
 
+    # get hashtag info
     for s in soup.find_all('div', id='hashtagItemContainer'):
         tag = s.find('span', {"class": "titleText--qKHbP"}).text
         stats = s.find_all('span', {"class": "item-value--VAdnq"})
@@ -20,9 +37,11 @@ def fetch_top_trends():
         views = stats[1].text
         trending_hashtag.append([tag, posts, views])
 
+    # get music info
     for s in soup.find_all('div', {"class": "music-name-wrap--FPaLL music-name-wrap--X6m9u"}):
         trending_music.append(s.text)
 
+    # get creator info
     for s in soup.find_all('div', id='creatorItemContainer'):
         tag = s.find('span', {"class": "music-name--LR+1s music-name--bEzZ1"}).text
         stats = s.find_all('span', {"class": "creator-data-value--CwFQt creator-data-value--S-K2V"})
@@ -47,11 +66,13 @@ def fetch_top_trends():
     creator_content = json_content['creatorList']
     tiktok_content = json_content['tiktoks']
 
+    # gather all data
     hashtag = hashtag.merge(pd.DataFrame.from_records(hashtag_content), left_index=True, right_index=True)
     music = music.merge(pd.DataFrame.from_records(music_content), left_index=True, right_index=True)
     creator = creator.merge(pd.DataFrame.from_records(creator_content), left_index=True, right_index=True)
     tiktok = pd.DataFrame.from_records(tiktok_content)
 
+    # format info
     hashtag['creators_examples'] = hashtag.apply(lambda x: ([e['nickName'] for e in x['creators']]), axis=1)
     hashtag = hashtag[['rank', 'tag', 'posts_count', 'views_count', 'creators_examples']].set_index('rank')
     music = music[['rank', 'music', 'author', 'countryCode', 'cover', 'link', 'urlTitle', 'songId']].set_index('rank')
@@ -65,10 +86,31 @@ def fetch_top_trends():
 
 
 def hashtag_trend_info(hashtag, country, period):
+    """
+    Returns information on ads TikTok site of a designated hashtag
+
+    Parameters
+    -------
+    hashtag : string
+        name of a challenge
+    country : string
+        name of a country
+    period : string
+        length of the period of study of the challenge in days (can be : 30, 120, 360)
+    Returns
+    -------
+    stats : list
+        list of posts and views statistics of a designated challenge
+    trend : string
+        information on status of the trend
+    region_info : list
+        information on location of the hashtag
+    related_hashtags : list
+        information on related hashtags of the hashtag
+    """
     url = f'https://ads.tiktok.com/business/creativecenter/hashtag/{hashtag}/pc/en' \
           f'?countryCode={country}&period={period}'
     page = requests.get(url)
-
     soup = BeautifulSoup(page.text)
 
     stats = [e.text for e in soup.find_all('span', {'class': 'title--gvWft title--eM6Wz'})]
@@ -90,9 +132,28 @@ def hashtag_trend_info(hashtag, country, period):
 
 
 def music_trend_info(song, country, period):
+    """
+    Returns information on ads TikTok site of a designated music
+
+    Parameters
+    -------
+    song : string
+        name and unique_id of a music
+    country : string
+        name of a country
+    period : string
+        length of the period of study of the challenge in days (can be : 30, 120, 360)
+    Returns
+    -------
+    trend : string
+        information on status of the trend
+    region_info : list
+        information on location of the music
+    music_info : list
+        information on related music of the music
+    """
     url = f"https://ads.tiktok.com/business/creativecenter/song/{song}/pc/en?countryCode={country}&period={period}"
     page = requests.get(url)
-
     soup = BeautifulSoup(page.text)
 
     trend = soup.find('span', {'class': 'bannerDesc--yWTb+ bannerDesc--94fZk'}).text
@@ -117,3 +178,35 @@ def music_trend_info(song, country, period):
     music_info = pd.DataFrame(music_info)
 
     return trend, region_info, music_info
+
+
+def fetch_top_influencers(country_code='fr'):
+    """
+    Returns dataframe of top influencers of the TikTok platform per country
+
+    Parameters
+    -------
+    country_code : string
+        country of the ranking searched (France : 'fr', USA : 'us', UK = 'gb', Germany : 'de'...)
+    Returns
+    -------
+    df_influencers : list
+        dataframe of influencers scrapped on designated website
+    """
+    url = "https://tokfluence.com/top?limit=100&country=" + country_code
+    page = requests.get(url)
+
+    # fetch list of influencers on main page website
+    soup = BeautifulSoup(page.content)
+    json_data = soup.find('script', text=re.compile("__NEXT_DATA__"))
+    data = str(json_data)[str(json_data).find('__NEXT_DATA__ = '):str(json_data).find('module={}')]
+    data = data.replace('__NEXT_DATA__ = ', '')
+    list_influencers = '[' + ((data.split('['))[1].split(']')[0]) + ']'
+
+    # convert data to dataframe
+    list_influencers = ast.literal_eval(list_influencers)
+    df_influencers = pd.DataFrame.from_records(list_influencers)
+    df_influencers = df_influencers[
+        ['fullName', 'username', '_id', 'uid', 'videosCount', 'followerCount', 'likesCount', 'profilePicUrl', 'region']]
+
+    return df_influencers

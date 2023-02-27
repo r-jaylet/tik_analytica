@@ -4,51 +4,49 @@
 ## Top trends
 
 ### Top trending hashtags
-fve vef vev v cdcvhjefdvjepofvhfe vv ve fv ev e ve
+5 most popular hashtags used on the platform
 
 ### Top trending musics
-fve vef vev v cdcvhjefdvjepofvhfe vv ve fv ev e ve
+5 most popular music used on the platform
 
 ### Top trending creators
-fve vef vev v cdcvhjefdvjepofvhfe vv ve fv ev e ve
+5 most popular creators viewed on the platform
 
 ### Top trending tiktoks
-fve vef vev v cdcvhjefdvjepofvhfe vv ve fv ev e ve
+5 most popular TikToks viewed on the platform
 
 
 ## Top influencers
 
 ### Top influencers per country
-fve vef vev v cdcvhjefdvjepofvhfe vv ve fv ev e ve
-
+Ranking of 100 most popular uTikTokers on the platform per country
 
 ## Search user
 
 ### Profile info
-fve vef vev v cdcvhjefdvjepofvhfe vv ve fv ev e ve
+General statistics of the user
 
 ### TikTok list
-fve vef vev v cdcvhjefdvjepofvhfe vv ve fv ev e ve
+Dataframe with information on posted videos
 
 ### Top collaborators
-fve vef vev v cdcvhjefdvjepofvhfe vv ve fv ev e ve
+Name of users with whom user has collaborated (cited or duo)
 
 ### Top hashtags used
-fve vef vev v cdcvhjefdvjepofvhfe vv ve fv ev e ve
-
+List of most used hashtag by user
 
 ## Search hashtag
 
 ### Hashtag info
-fve vef vev v cdcvhjefdvjepofvhfe vv ve fv ev e ve
+General statistics of the hashtag
 
 ### TikTok list
-fve vef vev v cdcvhjefdvjepofvhfe vv ve fv ev e ve
+Dataframe with information on posted videos with hashtag
 
 ## Search music
 
 ### Music info
-fve vef vev v cdcvhjefdvjepofvhfe vv ve fv ev e ve
+General statistics of the music
 
 ### TikTok list
-fve vef vev v cdcvhjefdvjepofvhfe vv ve fv ev e ve
+Dataframe with information on posted videos with music
