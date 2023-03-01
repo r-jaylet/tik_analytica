@@ -165,23 +165,18 @@ def display_user_data(username_):
 
 def display_hashtag_data(tag_):
     country = 'FR'
-    period = '120'
+    period = '30'
     stats, trend, region_info, related_hashtags = hashtag_trend_info(tag_, country, period)
 
-    st.header('Post stats', anchor=None)
+    st.header(f'Post stats in {country}', anchor=None)
     col1, col2 = st.columns(2)
     with col1:
-        st.text_area(
-            f'Posts in {country}',
-            f'Number of post in last {period} days : {stats[0]}\n\n'
-            f'Overall number of views : {stats[1]}',
-            height=100)
+        st.metric(label=f"Number of post in last {period} days", value=stats[0])
+        st.metric(label="Number of posts overall", value=stats[1])
+
     with col2:
-        st.text_area(
-            f'Posts in {country}',
-            f'Number of post in last {period} days : {stats[2]}\n\n'
-            f'Overall number of views : {stats[3]}',
-            height=100)
+        st.metric(label=f"Number of views in last {period} days", value=stats[2])
+        st.metric(label="Number of views overall", value=stats[3])
 
     st.header('Trend analysis', anchor=None)
     st.write(trend)
