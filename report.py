@@ -8,43 +8,75 @@ from format import human_format
 
 
 def display_trends_data():
-
     df_hashtag, df_music, df_creator, df_tiktok = fetch_top_trends()
 
     st.header('Trending hashtags', anchor=None)
-    st.dataframe(df_hashtag)
+    st.dataframe(df_hashtag, width=1350)
+
     st.header('Trending musics', anchor=None)
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
         st.image(df_music.iloc[0].cover, caption=df_music.iloc[0].music, width=200)
+        st.write('title : ', df_music.iloc[0].music)
+        st.write('author : ', df_music.iloc[0].author)
+        st.write('link : ', df_music.iloc[0].link)
     with col2:
         st.image(df_music.iloc[1].cover, caption=df_music.iloc[1].music, width=200)
+        st.write('title : ', df_music.iloc[1].music)
+        st.write('author : ', df_music.iloc[1].author)
+        st.write('link : ', df_music.iloc[1].link)
     with col3:
         st.image(df_music.iloc[2].cover, caption=df_music.iloc[2].music, width=200)
+        st.write('title : ', df_music.iloc[2].music)
+        st.write('author : ', df_music.iloc[2].author)
+        st.write('link : ', df_music.iloc[2].link)
     with col4:
         st.image(df_music.iloc[3].cover, caption=df_music.iloc[3].music, width=200)
+        st.write('title : ', df_music.iloc[3].music)
+        st.write('author : ', df_music.iloc[3].author)
+        st.write('link : ', df_music.iloc[3].link)
     with col5:
         st.image(df_music.iloc[4].cover, caption=df_music.iloc[4].music, width=200)
-    st.dataframe(df_music.drop('cover', axis=1))
+        st.write('title : ', df_music.iloc[4].music)
+        st.write('author : ', df_music.iloc[4].author)
+        st.write('link : ', df_music.iloc[4].link)
 
     st.header('Trending creators', anchor=None)
-    st.dataframe(df_creator)
+    st.dataframe(df_creator, width=1350)
     st.header('Trending tiktoks', anchor=None)
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
         st.image(df_tiktok.iloc[0].cover, width=200)
+        st.write('id : ', df_tiktok.iloc[0].id)
+        st.write('title : ', df_tiktok.iloc[0].title)
+        st.write('link : ', df_tiktok.iloc[0].itemUrl)
+
     with col2:
         st.image(df_tiktok.iloc[1].cover, width=200)
+        st.write('id : ', df_tiktok.iloc[1].id)
+        st.write('title : ', df_tiktok.iloc[1].title)
+        st.write('link : ', df_tiktok.iloc[1].itemUrl)
     with col3:
         st.image(df_tiktok.iloc[2].cover, width=200)
+        st.write('id : ', df_tiktok.iloc[2].id)
+        st.write('title : ', df_tiktok.iloc[2].title)
+        st.write('link : ', df_tiktok.iloc[2].itemUrl)
     with col4:
         st.image(df_tiktok.iloc[3].cover, width=200)
-    st.dataframe(df_tiktok.drop('cover', axis=1))
+        st.write('id : ', df_tiktok.iloc[3].id)
+        st.write('title : ', df_tiktok.iloc[3].title)
+        st.write('link : ', df_tiktok.iloc[3].itemUrl)
+
+    with col5:
+        st.image(df_tiktok.iloc[4].cover, width=200)
+        st.write('id : ', df_tiktok.iloc[4].id)
+        st.write('title : ', df_tiktok.iloc[4].title)
+        st.write('link : ', df_tiktok.iloc[4].itemUrl)
 
 
 def display_influ_data(country):
     df_influ = fetch_top_influencers(country)
-    st.header('Top 5 influencers', anchor=None)
+    st.header(f'Top 5 influencers in {country}', anchor=None)
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
         st.image(df_influ.iloc[0].profilePicUrl, caption=df_influ.iloc[0].fullName, width=200)
@@ -57,7 +89,7 @@ def display_influ_data(country):
     with col5:
         st.image(df_influ.iloc[4].profilePicUrl, caption=df_influ.iloc[4].fullName, width=200)
     st.header('Full ranking', anchor=None)
-    st.dataframe(df_influ.drop('profilePicUrl', axis=1), height=3000)
+    st.dataframe(df_influ.drop('profilePicUrl', axis=1), height=3000, width=1350)
 
     st.download_button(
         label='Download data as CSV',
@@ -227,7 +259,6 @@ def display_hashtag_data(tag_):
 
 
 def display_music_data(music_):
-
     df_music = music(music_)
     df_music = pd.DataFrame.from_dict(df_music, orient='index')
 
@@ -284,13 +315,17 @@ with tab1:
 with tab2:
     # Top influencers page
     st.title('Top influencers')
-    influ_type = st.text_input(
-        'Search for country',
-        placeholder=' example : fr, us...',
-        help='Type in country code')
-    if st.button('Search influencers'):
-        display_influ_data(influ_type)
-
+    option = st.selectbox(
+        'Search for the following country?',
+        ('USA', 'France', 'UK', 'Germany', 'Italy', 'Spain', 'Portugal'))
+    code_count = {'USA': 'us',
+                  'France': 'fr',
+                  'UK': 'uk',
+                  'Germany': 'de',
+                  'Italy': 'it',
+                  'Spain': 'es',
+                  'Portugal': 'pt'}
+    display_influ_data(code_count[option])
 
 with tab3:
     # User search page
