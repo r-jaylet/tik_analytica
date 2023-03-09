@@ -15,63 +15,49 @@ def display_trends_data():
 
     st.header('Trending musics', anchor=None)
     col1, col2, col3, col4, col5 = st.columns(5)
+
+    def format_music_mark(num):
+        st.markdown(f'<div style="text-align:center;"><h1 style="font-size:25px;">{df_music.iloc[num].music}</h1></div>',
+                    unsafe_allow_html=True)
+        st.markdown(f'<div style="text-align:center;"><a href="{df_music.iloc[num].link}">'
+                    f'<img src="{df_music.iloc[num].cover}" width="200"></a>'
+                    f'<p style="text-align:center; color:grey; font-size:10px;">Click image for more info</p></div>'
+                    f'<p style="text-align:center; font-size:20px;">{df_music.iloc[num].author}</p>',
+                    unsafe_allow_html=True)
     with col1:
-        st.image(df_music.iloc[0].cover, caption=df_music.iloc[0].music, width=200)
-        st.write('title : ', df_music.iloc[0].music)
-        st.write('author : ', df_music.iloc[0].author)
-        st.write('link : ', df_music.iloc[0].link)
+        format_music_mark(0)
     with col2:
-        st.image(df_music.iloc[1].cover, caption=df_music.iloc[1].music, width=200)
-        st.write('title : ', df_music.iloc[1].music)
-        st.write('author : ', df_music.iloc[1].author)
-        st.write('link : ', df_music.iloc[1].link)
+        format_music_mark(1)
     with col3:
-        st.image(df_music.iloc[2].cover, caption=df_music.iloc[2].music, width=200)
-        st.write('title : ', df_music.iloc[2].music)
-        st.write('author : ', df_music.iloc[2].author)
-        st.write('link : ', df_music.iloc[2].link)
+        format_music_mark(2)
     with col4:
-        st.image(df_music.iloc[3].cover, caption=df_music.iloc[3].music, width=200)
-        st.write('title : ', df_music.iloc[3].music)
-        st.write('author : ', df_music.iloc[3].author)
-        st.write('link : ', df_music.iloc[3].link)
+        format_music_mark(3)
     with col5:
-        st.image(df_music.iloc[4].cover, caption=df_music.iloc[4].music, width=200)
-        st.write('title : ', df_music.iloc[4].music)
-        st.write('author : ', df_music.iloc[4].author)
-        st.write('link : ', df_music.iloc[4].link)
+        format_music_mark(4)
 
     st.header('Trending creators', anchor=None)
     st.dataframe(df_creator, width=1350)
     st.header('Trending tiktoks', anchor=None)
     col1, col2, col3, col4, col5 = st.columns(5)
+
+    def format_tiktok_mark(num):
+        st.markdown(f'<div style="text-align:center;"><a href="{df_tiktok.iloc[num].itemUrl}">'
+                    f'<img src="{df_tiktok.iloc[num].cover}" width="200"></a>'
+                    f'<p style="text-align:center; color:grey; font-size:10px;">Click image for more info</p></div>'
+                    f'<p style="text-align:center; font-size:15px;">id = {df_tiktok.iloc[num].id}</p>',
+                    unsafe_allow_html=True)
+        st.markdown(f'<div style="text-align:center;"><h1 style="font-size:15px;">{df_tiktok.iloc[num].title}</h1></div>',
+                    unsafe_allow_html=True)
     with col1:
-        st.image(df_tiktok.iloc[0].cover, width=200)
-        st.write('id : ', df_tiktok.iloc[0].id)
-        st.write('title : ', df_tiktok.iloc[0].title)
-        st.write('link : ', df_tiktok.iloc[0].itemUrl)
-
+        format_tiktok_mark(0)
     with col2:
-        st.image(df_tiktok.iloc[1].cover, width=200)
-        st.write('id : ', df_tiktok.iloc[1].id)
-        st.write('title : ', df_tiktok.iloc[1].title)
-        st.write('link : ', df_tiktok.iloc[1].itemUrl)
+        format_tiktok_mark(1)
     with col3:
-        st.image(df_tiktok.iloc[2].cover, width=200)
-        st.write('id : ', df_tiktok.iloc[2].id)
-        st.write('title : ', df_tiktok.iloc[2].title)
-        st.write('link : ', df_tiktok.iloc[2].itemUrl)
+        format_tiktok_mark(2)
     with col4:
-        st.image(df_tiktok.iloc[3].cover, width=200)
-        st.write('id : ', df_tiktok.iloc[3].id)
-        st.write('title : ', df_tiktok.iloc[3].title)
-        st.write('link : ', df_tiktok.iloc[3].itemUrl)
-
+        format_tiktok_mark(3)
     with col5:
-        st.image(df_tiktok.iloc[4].cover, width=200)
-        st.write('id : ', df_tiktok.iloc[4].id)
-        st.write('title : ', df_tiktok.iloc[4].title)
-        st.write('link : ', df_tiktok.iloc[4].itemUrl)
+        format_tiktok_mark(4)
 
 
 def display_influ_data(country):
@@ -109,16 +95,23 @@ def display_user_data(username_):
     st.header('Profile description', anchor=None)
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.image(df_user_info[0].avatar, width=300, caption=df_user_info[0].nickname)
+        st.markdown(f'<div style="text-align:center;">'
+                    f'<img src="{df_user_info[0].avatar}" width="300">',
+                    unsafe_allow_html=True)
     with col2:
-        st.text_area(
-            'User info',
-            f'unique id: {df_user_info[0].uniqueId}\n\n'
-            f'id: {df_user_info[0].id}\n\n'
-            f'bio link: {df_user_info[0].bioLink}\n\n'
-            f'private account: {df_user_info[0].privateAccount}',
-            height=300,
-            label_visibility='collapsed')
+        st.markdown(f'''
+        <div style="background-color: #f2f2f2; padding: 20px; height: 300px;">
+            <div style="font-size: 20px;">nickname: {df_user_info[0].nickname}</div>
+            <div style="height: 10px;"></div>
+            <div style="font-size: 20px;">unique id: {df_user_info[0].uniqueId}</div>
+            <div style="height: 10px;"></div>
+            <div style="font-size: 20px;">id: {df_user_info[0].id}</div>
+            <div style="height: 10px;"></div>
+            <div style="font-size: 20px;">bio link: {df_user_info[0].bioLink}</div>
+            <div style="height: 10px;"></div>
+            <div style="font-size: 20px;">private account: {df_user_info[0].privateAccount}</div>
+        </div>
+        ''', unsafe_allow_html=True)
     with col3:
         before = df_user_videos[df_user_videos['createdAt'] <= datetime.now() - timedelta(days=7)]
         ratio_vid = len(df_user_videos) / int((datetime.now() - df_user_videos.iloc[-1].createdAt).days / 7)
@@ -132,21 +125,31 @@ def display_user_data(username_):
         st.metric('Average views / video', human_format(ratio_views), delta=human_format(delt * 100) + '%',
                   delta_color="normal")
 
-        engagement = df_user_videos['likesCount'].sum() / df_user_videos['playCount'].sum()
-        before_engagement = df_user_videos.iloc[1:]['likesCount'].sum() / df_user_videos.iloc[1:]['playCount'].sum()
+        engagement = (df_user_videos['likesCount'].sum() + df_user_videos['shareCount'].sum() + df_user_videos['commentCount'].sum()) / df_user_videos['playCount'].sum()
+        before_engagement = (df_user_videos.iloc[1:]['likesCount'].sum() + df_user_videos.iloc[1:]['shareCount'].sum() + df_user_videos.iloc[1:]['commentCount'].sum()) / df_user_videos.iloc[1:]['playCount'].sum()
         delt = (engagement - before_engagement) / engagement
         st.metric('Engagement rate', human_format(engagement), delta=human_format(delt * 100) + '%',
                   delta_color="normal")
 
+    st.markdown("<div style='height:50px;'></div>", unsafe_allow_html=True)
+
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.text_area('fol', f'followers : {df_user_info[0].followers}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">followers : {df_user_info[0].followers}</div>',
+            unsafe_allow_html=True)
     with col2:
-        st.text_area('foll', f'following : {df_user_info[0].following}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">following : {df_user_info[0].following}</div>',
+            unsafe_allow_html=True)
     with col3:
-        st.text_area('like', f'like count : {df_user_info[0].hearts}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">likes count : {df_user_info[0].hearts}</div>',
+            unsafe_allow_html=True)
     with col4:
-        st.text_area('vid', f'vid count : {df_user_info[0].videos}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">video count : {df_user_info[0].videos}</div>',
+            unsafe_allow_html=True)
 
     st.header('TikTok list', anchor=None)
     st.dataframe(df_view[['id', 'description', 'createdAt', 'duration',
@@ -161,32 +164,49 @@ def display_user_data(username_):
         st.area_chart(list(df_user_videos['playCount']))
     with col2:
         st.subheader('Engagement rate per video', anchor=None)
-        st.area_chart(df_user_videos['shareCount'] * df_user_videos['likesCount'] / df_user_videos['playCount'])
+        st.area_chart((df_user_videos['shareCount']+df_user_videos['likesCount']+df_user_videos['commentCount'])/ df_user_videos['playCount'])
 
     words = df_user_videos.description.str.split(expand=True).stack().value_counts().keys()
     st.header('Main hashtags used', anchor=None)
     hasht = [i for i in words if i.startswith('#')][:4]
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.text_area('h0', f'{hasht[0]}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{hasht[0]}</div>',
+            unsafe_allow_html=True)
     with col2:
-        st.text_area('h1', f'{hasht[1]}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{hasht[1]}</div>',
+            unsafe_allow_html=True)
     with col3:
-        st.text_area('h2', f'{hasht[2]}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{hasht[2]}</div>',
+            unsafe_allow_html=True)
     with col4:
-        st.text_area('h3', f'{hasht[3]}', height=25, label_visibility='collapsed')
-
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{hasht[3]}</div>',
+            unsafe_allow_html=True)
     st.header('Main collaborators', anchor=None)
     collab = [i for i in words if i.startswith('@')][:5]
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.text_area('c0', f'{collab[0]}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{collab[0]}</div>',
+            unsafe_allow_html=True)
     with col2:
-        st.text_area('c1', f'{collab[1]}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{collab[0]}</div>',
+            unsafe_allow_html=True)
     with col3:
-        st.text_area('c2', f'{collab[2]}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{collab[0]}</div>',
+            unsafe_allow_html=True)
     with col4:
-        st.text_area('c3', f'{collab[3]}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{collab[0]}</div>',
+            unsafe_allow_html=True)
+
+    st.markdown("<div style='height:30px;'></div>", unsafe_allow_html=True)
 
     st.download_button(
         label="Download data as CSV",
@@ -230,26 +250,43 @@ def display_hashtag_data(tag_):
     authors = list(df_hash.author)
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.text_area('a0', f'@{authors[0]}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">@{authors[0]}</div>',
+            unsafe_allow_html=True)
     with col2:
-        st.text_area('a1', f'@{authors[1]}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">@{authors[1]}</div>',
+            unsafe_allow_html=True)
     with col3:
-        st.text_area('a2', f'@{authors[2]}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">@{authors[2]}</div>',
+            unsafe_allow_html=True)
     with col4:
-        st.text_area('a3', f'@{authors[3]}', height=25, label_visibility='collapsed')
-
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">@{authors[3]}</div>',
+            unsafe_allow_html=True)
     st.header('Associated hashtags', anchor=None)
     words = df_hash.description.str.split(expand=True).stack().value_counts().keys()
     hasht = [i for i in words if i.startswith('#')][:4]
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.text_area('h0', f'{hasht[0]}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">@{hasht[0]}</div>',
+            unsafe_allow_html=True)
     with col2:
-        st.text_area('h1', f'{hasht[1]}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">@{hasht[1]}</div>',
+            unsafe_allow_html=True)
     with col3:
-        st.text_area('h2', f'{hasht[2]}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">@{hasht[2]}</div>',
+            unsafe_allow_html=True)
     with col4:
-        st.text_area('h3', f'{hasht[3]}', height=25, label_visibility='collapsed')
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">@{hasht[3]}</div>',
+            unsafe_allow_html=True)
+
+    st.markdown("<div style='height:30px;'></div>", unsafe_allow_html=True)
 
     st.download_button(
         label="Download data as CSV",
@@ -269,20 +306,28 @@ def display_music_data(music_):
 
     st.header('Music info', anchor=None)
     col1, col2 = st.columns(2)
-    with col1:
-        st.image(df_music[0].coverLarge, width=300, caption=df_music[0].title)
-    with col2:
-        st.text_area(
-            'Music info',
-            f'title: {df_music[0].title}\n\n'
-            f'id: {df_music[0].id}\n\n'
-            f'author: {df_music[0].author}\n\n'
-            f'original: {df_music[0].original}\n\n'
-            f'album: {df_music[0].album}\n\n'
-            f'duration: {df_music[0].duration}',
-            height=300,
-            label_visibility='collapsed')
 
+    with col1:
+        st.markdown(f'<div style="text-align:center;">'
+                    f'<img src="{df_music[0].coverLarge}" width="300">',
+                    unsafe_allow_html=True)
+    with col2:
+        st.markdown(f'''
+        <div style="background-color: #f2f2f2; padding: 20px; height: 300px;">
+            <div style="font-size: 20px;">title: {df_music[0].title}</div>
+            <div style="height: 10px;"></div>
+            <div style="font-size: 20px;">id: {df_music[0].id}</div>
+            <div style="height: 10px;"></div>
+            <div style="font-size: 20px;">author: {df_music[0].author}</div>
+            <div style="height: 10px;"></div>
+            <div style="font-size: 20px;">original: {df_music[0].original}</div>
+            <div style="height: 10px;"></div>
+            <div style="font-size: 20px;">album: {df_music[0].album}</div>
+            <div style="height: 10px;"></div>
+            <div style="font-size: 20px;">duration: {df_music[0].duration}</div>
+        </div>
+        ''', unsafe_allow_html=True)
+        
     st.header('Trend analysis', anchor=None)
     st.write(trend)
 
@@ -291,6 +336,8 @@ def display_music_data(music_):
 
     st.header('Related songs', anchor=None)
     st.dataframe(music_info)
+
+    st.markdown("<div style='height:30px;'></div>", unsafe_allow_html=True)
 
     st.download_button(
         label="Download data as CSV",

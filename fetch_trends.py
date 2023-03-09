@@ -115,7 +115,7 @@ def hashtag_trend_info(hashtag, country_code, period):
     soup = BeautifulSoup(page.text, features='lxml')
 
     stats = [e.text for e in soup.find_all('span', {'class': 'title--gvWft title--eM6Wz'})]
-    trend = soup.find('span', {'class': 'bannerDesc--CORuD bannerDesc--McarQ'}).text
+    trend = soup.find('span', {'class': 'sectionDesc--MeTTU sectionDesc--v0N+l'}).text
     region_info = []
     region = soup.find_all('div', {'class': 'content-wrap-item--P88lK content-wrap-item--zMoGF'})
     for r in region:
@@ -157,7 +157,7 @@ def music_trend_info(song, country_code, period):
     page = requests.get(url)
     soup = BeautifulSoup(page.text, features='lxml')
 
-    trend = soup.find('span', {'class': 'bannerDesc--yWTb+ bannerDesc--94fZk'}).text
+    trend = soup.find('span', {'class': 'sectionDesc--iGpw7 sectionDesc--OJ+RE'}).text
     region_info = []
     region = soup.find_all('div', {'class': 'content-wrap-item--P88lK content-wrap-item--zMoGF'})
     for r in region:
