@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
+import plotly.express as px
+
 
 from fetch_trends import fetch_top_trends, hashtag_trend_info, music_trend_info, fetch_top_influencers
 from fetch_data import user, user_videos, hashtag, music
@@ -195,15 +197,15 @@ def display_user_data(username_):
             unsafe_allow_html=True)
     with col2:
         st.markdown(
-            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{collab[0]}</div>',
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{collab[1]}</div>',
             unsafe_allow_html=True)
     with col3:
         st.markdown(
-            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{collab[0]}</div>',
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{collab[2]}</div>',
             unsafe_allow_html=True)
     with col4:
         st.markdown(
-            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{collab[0]}</div>',
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{collab[3]}</div>',
             unsafe_allow_html=True)
 
     st.markdown("<div style='height:30px;'></div>", unsafe_allow_html=True)
@@ -217,8 +219,8 @@ def display_user_data(username_):
 
 def display_hashtag_data(tag_):
     country = 'FR'
-    period = '30'
-    stats, trend, region_info, related_hashtags = hashtag_trend_info(tag_, country, period)
+    period = '120'
+    stats, trend, trend_graph, audience_ages, audience_countries, related_hashtags, related_items = hashtag_trend_info(tag_, country, period)
 
     st.header(f'Post stats in {country}', anchor=None)
     col1, col2 = st.columns(2)
@@ -232,12 +234,42 @@ def display_hashtag_data(tag_):
 
     st.header('Trend analysis', anchor=None)
     st.write(trend)
+    st.subheader('Evolution of the index of the video views relative to peak popularity')
+    st.area_chart(trend_graph.value)
 
-    st.header('Region info', anchor=None)
-    st.dataframe(region_info)
+    st.header('Audience analysis', anchor=None)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader('Audience age range', anchor=None)
+        st.write('Percentage of viewers associated with different age ranges')
+        fig = px.pie(audience_ages, values='score', names='ageLevel')
+        st.plotly_chart(fig)
+    with col2:
+        st.subheader('Audience location', anchor=None)
+        st.write('Top locations where this term is popular. Value is an index score')
+        fig = px.bar(audience_countries, y='score', x='countryInfo')
+        st.plotly_chart(fig)
 
-    st.header('Related hashtags', anchor=None)
-    st.dataframe(related_hashtags.T)
+    st.header('Hashtags commonly used with', anchor=None)
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">#{related_hashtags.hashtagName[0]}</div>',
+            unsafe_allow_html=True)
+    with col2:
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">#{related_hashtags.hashtagName[1]}</div>',
+            unsafe_allow_html=True)
+    with col3:
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">#{related_hashtags.hashtagName[2]}</div>',
+            unsafe_allow_html=True)
+    with col4:
+        st.markdown(
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">#{related_hashtags.hashtagName[3]}</div>',
+            unsafe_allow_html=True)
+
+    st.markdown("<div style='height:50px;'></div>", unsafe_allow_html=True)
 
     st.header('TikTok list', anchor=None)
     df_hash = hashtag(tag_)
@@ -245,6 +277,8 @@ def display_hashtag_data(tag_):
     st.dataframe(df_hash[['id', 'description', 'createdAt', 'duration',
                           'shareCount', 'likesCount', 'commentCount', 'playCount',
                           'downloadURL']], height=200)
+
+    st.markdown("<div style='height:50px;'></div>", unsafe_allow_html=True)
 
     st.header('Associated TikTokers', anchor=None)
     authors = list(df_hash.author)
@@ -265,28 +299,31 @@ def display_hashtag_data(tag_):
         st.markdown(
             f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">@{authors[3]}</div>',
             unsafe_allow_html=True)
+
+    st.markdown("<div style='height:50px;'></div>", unsafe_allow_html=True)
+
     st.header('Associated hashtags', anchor=None)
     words = df_hash.description.str.split(expand=True).stack().value_counts().keys()
     hasht = [i for i in words if i.startswith('#')][:4]
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.markdown(
-            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">@{hasht[0]}</div>',
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{hasht[0]}</div>',
             unsafe_allow_html=True)
     with col2:
         st.markdown(
-            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">@{hasht[1]}</div>',
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{hasht[1]}</div>',
             unsafe_allow_html=True)
     with col3:
         st.markdown(
-            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">@{hasht[2]}</div>',
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{hasht[2]}</div>',
             unsafe_allow_html=True)
     with col4:
         st.markdown(
-            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">@{hasht[3]}</div>',
+            f'<div style="background-color: #f2f2f2; text-align: center; font-size: 15px; padding: 10px;">{hasht[3]}</div>',
             unsafe_allow_html=True)
 
-    st.markdown("<div style='height:30px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:50px;'></div>", unsafe_allow_html=True)
 
     st.download_button(
         label="Download data as CSV",
@@ -302,7 +339,7 @@ def display_music_data(music_):
     music_tag = f'{df_music[0].title}-{df_music[0].id}'
     country = 'FR'
     period = '120'
-    trend, region_info, music_info = music_trend_info(music_tag, country, period)
+    trend, trend_graph, audience_ages, audience_countries, related_items = music_trend_info(music_tag, country, period)
 
     st.header('Music info', anchor=None)
     col1, col2 = st.columns(2)
@@ -327,17 +364,29 @@ def display_music_data(music_):
             <div style="font-size: 20px;">duration: {df_music[0].duration}</div>
         </div>
         ''', unsafe_allow_html=True)
-        
+
     st.header('Trend analysis', anchor=None)
     st.write(trend)
+    st.subheader('Evolution of the index of the video views relative to peak popularity')
+    st.area_chart(trend_graph.value)
 
-    st.header('Region info', anchor=None)
-    st.dataframe(region_info)
+    st.header('Audience analysis', anchor=None)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader('Audience age range', anchor=None)
+        st.write('Percentage of viewers associated with different age ranges')
+        fig = px.pie(audience_ages, values='score', names='ageLevel')
+        st.plotly_chart(fig)
+    with col2:
+        st.subheader('Audience location', anchor=None)
+        st.write('Top locations where this term is popular. Value is an index score')
+        fig = px.bar(audience_countries, y='score', x='countryInfo')
+        st.plotly_chart(fig)
 
-    st.header('Related songs', anchor=None)
-    st.dataframe(music_info)
+    st.header('TikTok lists', anchor=None)
+    st.dataframe(related_items)
 
-    st.markdown("<div style='height:30px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:50px;'></div>", unsafe_allow_html=True)
 
     st.download_button(
         label="Download data as CSV",

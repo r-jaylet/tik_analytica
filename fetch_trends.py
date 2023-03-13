@@ -113,23 +113,24 @@ def hashtag_trend_info(hashtag, country_code, period):
           f'?countryCode={country_code}&period={period}'
     page = requests.get(url)
     soup = BeautifulSoup(page.text, features='lxml')
-
+    
     stats = [e.text for e in soup.find_all('span', {'class': 'title--gvWft title--eM6Wz'})]
     trend = soup.find('span', {'class': 'sectionDesc--MeTTU sectionDesc--v0N+l'}).text
-    region_info = []
-    region = soup.find_all('div', {'class': 'content-wrap-item--P88lK content-wrap-item--zMoGF'})
-    for r in region:
-        reg = {'country': r.find('span', {'class': 'content-wrap-item-label-wrap-label--33mdU '
-                                                   'content-wrap-item-label-wrap-label--uojf9'}).text,
-               'count': r.find('span', {'class': 'content-wrap-item-value-wrap-value--wtBCS '
-                                                 'content-wrap-item-value-wrap-value--q-PNh'}).text}
-        region_info.append(reg)
-    related_hashtags = [h.find('span').text for h in soup.find_all('div', {'class': 'mtitle--EtrCY mtitle--mJqfP'})]
+    
+    find_content = soup.find('script', id="__NEXT_DATA__")
+    str_content = str(find_content).split('<')[1].split('>')[1]
+    json_content = json.loads(str_content)['props']['pageProps']['data']
 
-    region_info = pd.DataFrame(region_info)
-    related_hashtags = pd.DataFrame(related_hashtags)
+    trend_graph = pd.DataFrame.from_records(json_content['trend'])
+    trend_graph['time'] = pd.to_datetime(trend_graph.time, unit='s').astype(str)
+    audience_ages = pd.DataFrame.from_records(json_content['audienceAges'])
+    audience_ages['ageLevel'] = audience_ages['ageLevel'].replace(3, '18-24').replace(4, '25-34').replace(5, '35+')
+    audience_countries = pd.DataFrame.from_records(json_content['audienceCountries'])
+    audience_countries['countryInfo'] = audience_countries.apply(lambda x: x['countryInfo']['value'], axis=1)
+    related_hashtags = pd.DataFrame.from_records(json_content['relatedHashtags'])
+    related_items = pd.DataFrame.from_records(json_content['relatedItems'])
 
-    return stats, trend, region_info, related_hashtags
+    return stats, trend, trend_graph, audience_ages, audience_countries, related_hashtags, related_items
 
 
 def music_trend_info(song, country_code, period):
@@ -158,27 +159,20 @@ def music_trend_info(song, country_code, period):
     soup = BeautifulSoup(page.text, features='lxml')
 
     trend = soup.find('span', {'class': 'sectionDesc--iGpw7 sectionDesc--OJ+RE'}).text
-    region_info = []
-    region = soup.find_all('div', {'class': 'content-wrap-item--P88lK content-wrap-item--zMoGF'})
-    for r in region:
-        reg = {'country': r.find('span', {
-            'class': 'content-wrap-item-label-wrap-label--33mdU '
-                     'content-wrap-item-label-wrap-label--uojf9'}).text,
-               'count': r.find('span', {
-                   'class': 'content-wrap-item-value-wrap-value--wtBCS '
-                            'content-wrap-item-value-wrap-value--q-PNh'}).text}
-        region_info.append(reg)
-    sounds = soup.find_all('div', {'class': 'soundItem--OBPhW soundItem--IE6BO'})
-    music_info = []
-    for s in sounds:
-        music = {'name': s.find('span', {'class': 'soundItem-desc-title--Zu0RR soundItem-desc-title--skY+6'}).text,
-                 'artist': s.find('span', {'class': 'soundItem-desc-author--QMtpm soundItem-desc-author--x-lDq'}).text}
-        music_info.append(music)
 
-    region_info = pd.DataFrame(region_info)
-    music_info = pd.DataFrame(music_info)
+    find_content = soup.find('script', id="__NEXT_DATA__")
+    str_content = str(find_content).split('<')[1].split('>')[1]
+    json_content = json.loads(str_content)['props']['pageProps']['data']
 
-    return trend, region_info, music_info
+    trend_graph = pd.DataFrame.from_records(json_content['trend'])
+    trend_graph['time'] = pd.to_datetime(trend_graph.time, unit='s').astype(str)
+    audience_ages = pd.DataFrame.from_records(json_content['audienceAges'])
+    audience_ages['ageLevel'] = audience_ages['ageLevel'].replace(3, '18-24').replace(4, '25-34').replace(5, '35+')
+    audience_countries = pd.DataFrame.from_records(json_content['audienceCountries'])
+    audience_countries['countryInfo'] = audience_countries.apply(lambda x: x['countryInfo']['value'], axis=1)
+    related_items = pd.DataFrame.from_records(json_content['relatedItems'])
+
+    return trend, trend_graph, audience_ages, audience_countries, related_items
 
 
 def fetch_top_influencers(country_code='fr'):
