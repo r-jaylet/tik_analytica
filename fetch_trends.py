@@ -75,7 +75,7 @@ def fetch_top_trends():
 
     # format info
     #hashtag['creators_examples'] = hashtag.apply(lambda x: ([e['nickName'] for e in x['creators']]), axis=1)
-    hashtag['creators_examples'] = hashtag['nickName']
+    hashtag['creators_examples'] = hashtag['creators']
     hashtag = hashtag[['rank', 'tag', 'posts_count', 'views_count', 'creators_examples']].set_index('rank')
     music = music[['rank', 'cover', 'music', 'author', 'countryCode', 'songId', 'link']].set_index('rank')
     creator['rank'] = list(np.arange(len(creator)))
