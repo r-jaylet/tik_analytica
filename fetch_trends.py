@@ -104,10 +104,16 @@ def hashtag_trend_info(hashtag, country_code, period):
         list of posts and views statistics of a designated challenge
     trend : string
         information on status of the trend
-    region_info : list
-        information on location of the hashtag
-    related_hashtags : list
-        information on related hashtags of the hashtag
+    trend_graph : dataframe
+        evolution of the trend on the period of study
+    audience_ages : dataframe
+        information on the age of the audience
+    audience_countries : dataframe
+        information on the country of origin of the audience
+    related_hashtags : dataframe
+        most commonly used hashtags used with
+    related_items : dataframe
+        trendy videos that used this specific hashtag
     """
     url = f'https://ads.tiktok.com/business/creativecenter/hashtag/{hashtag}/pc/en' \
           f'?countryCode={country_code}&period={period}'
@@ -149,10 +155,14 @@ def music_trend_info(song, country_code, period):
     -------
     trend : string
         information on status of the trend
-    region_info : list
-        information on location of the music
-    music_info : list
-        information on related music of the music
+    trend_graph : dataframe
+        evolution of the trend on the period of study
+    audience_ages : dataframe
+        information on the age of the audience
+    audience_countries : dataframe
+        information on the country of origin of the audience
+    related_items : dataframe
+        trendy videos that used this specific hashtag
     """
     url = f"https://ads.tiktok.com/business/creativecenter/song/{song}/pc/en?countryCode={country_code}&period={period}"
     page = requests.get(url)

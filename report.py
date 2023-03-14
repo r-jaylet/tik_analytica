@@ -82,7 +82,7 @@ def display_influ_data(country):
     st.download_button(
         label='Download data as CSV',
         data=df_influ.to_csv(index=False).encode("utf-8"),
-        file_name=f'df_{country}.csv',
+        file_name=f'df_influ_{country}.csv',
     )
 
 
@@ -119,21 +119,24 @@ def display_user_data(username_):
         ratio_vid = len(df_user_videos) / int((datetime.now() - df_user_videos.iloc[-1].createdAt).days / 7)
         before_ratio_vid = len(before) / int((datetime.now() - before.iloc[-1].createdAt).days / 7)
         delt = (ratio_vid - before_ratio_vid) / ratio_vid
-        st.metric('Videos / week', human_format(ratio_vid), delta=human_format(delt * 100) + '%', delta_color="normal")
+        st.metric('Videos / week', human_format(ratio_vid),
+                  delta=human_format(delt * 100) + '%', delta_color="normal")
 
         ratio_views = df_user_videos['playCount'].sum() / len(df_user_videos)
         before = df_user_videos.iloc[1:]
         delt = (ratio_views - (before['playCount'].sum() / len(before))) / ratio_views
-        st.metric('Average views / video', human_format(ratio_views), delta=human_format(delt * 100) + '%',
-                  delta_color="normal")
+        st.metric('Average views / video', human_format(ratio_views),
+                  delta=human_format(delt * 100) + '%', delta_color="normal")
 
-        engagement = (df_user_videos['likesCount'].sum() + df_user_videos['shareCount'].sum() + df_user_videos['commentCount'].sum()) / df_user_videos['playCount'].sum()
-        before_engagement = (df_user_videos.iloc[1:]['likesCount'].sum() + df_user_videos.iloc[1:]['shareCount'].sum() + df_user_videos.iloc[1:]['commentCount'].sum()) / df_user_videos.iloc[1:]['playCount'].sum()
+        engagement = (df_user_videos['likesCount'].sum() +
+                      df_user_videos['shareCount'].sum() +
+                      df_user_videos['commentCount'].sum()) / df_user_videos['playCount'].sum()
+        before_engagement = (df_user_videos.iloc[1:]['likesCount'].sum() +
+                             df_user_videos.iloc[1:]['shareCount'].sum() +
+                             df_user_videos.iloc[1:]['commentCount'].sum()) / df_user_videos.iloc[1:]['playCount'].sum()
         delt = (engagement - before_engagement) / engagement
-        st.metric('Engagement rate', human_format(engagement), delta=human_format(delt * 100) + '%',
-                  delta_color="normal")
-
-    st.markdown("<div style='height:50px;'></div>", unsafe_allow_html=True)
+        st.metric('Engagement rate', human_format(engagement),
+                  delta=human_format(delt * 100) + '%', delta_color="normal")
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
@@ -162,11 +165,12 @@ def display_user_data(username_):
     df_user_videos = df_user_videos.sort_values('createdAt')
     col1, col2 = st.columns(2)
     with col1:
-        st.subheader('Views per video', anchor=None)
-        st.area_chart(list(df_user_videos['playCount']))
+        st.subheader('Reaction per video', anchor=None)
+        st.area_chart(df_user_videos[['playCount', 'likesCount']])
     with col2:
         st.subheader('Engagement rate per video', anchor=None)
-        st.area_chart((df_user_videos['shareCount']+df_user_videos['likesCount']+df_user_videos['commentCount'])/ df_user_videos['playCount'])
+        df_user_videos['engagement_rate'] = (df_user_videos['shareCount'] + df_user_videos['likesCount'] + df_user_videos['commentCount']) / df_user_videos['playCount']
+        st.area_chart(df_user_videos['engagement_rate'])
 
     words = df_user_videos.description.str.split(expand=True).stack().value_counts().keys()
     st.header('Main hashtags used', anchor=None)
@@ -233,9 +237,11 @@ def display_hashtag_data(tag_):
         st.metric(label="Number of views overall", value=stats[3])
 
     st.header('Trend analysis', anchor=None)
-    st.write(trend)
+    st.caption(trend)
     st.subheader('Evolution of the index of the video views relative to peak popularity')
-    st.area_chart(trend_graph.value)
+    fig = px.area(trend_graph, x="time", y="value", width=1500, height=300)
+    fig.update_xaxes(dtick="M1", tickformat="%d %B")
+    st.plotly_chart(fig)
 
     st.header('Audience analysis', anchor=None)
     col1, col2 = st.columns(2)
@@ -366,9 +372,11 @@ def display_music_data(music_):
         ''', unsafe_allow_html=True)
 
     st.header('Trend analysis', anchor=None)
-    st.write(trend)
+    st.caption(trend)
     st.subheader('Evolution of the index of the video views relative to peak popularity')
-    st.area_chart(trend_graph.value)
+    fig = px.area(trend_graph, x="time", y="value", width=1500, height=300)
+    fig.update_xaxes(dtick="M1", tickformat="%d %B")
+    st.plotly_chart(fig)
 
     st.header('Audience analysis', anchor=None)
     col1, col2 = st.columns(2)
