@@ -19,13 +19,14 @@ def display_trends_data():
     col1, col2, col3, col4, col5 = st.columns(5)
 
     def format_music_mark(num):
-        st.markdown(f'<div style="text-align:center;"><h1 style="font-size:25px;">{df_music.iloc[num].music}</h1></div>',
-                    unsafe_allow_html=True)
-        st.markdown(f'<div style="text-align:center;"><a href="{df_music.iloc[num].link}">'
-                    f'<img src="{df_music.iloc[num].cover}" width="200"></a>'
-                    f'<p style="text-align:center; color:grey; font-size:10px;">Click image for more info</p></div>'
-                    f'<p style="text-align:center; font-size:20px;">{df_music.iloc[num].author}</p>',
-                    unsafe_allow_html=True)
+        if len(df_music) != 0:
+            st.markdown(f'<div style="text-align:center;"><h1 style="font-size:25px;">{df_music.iloc[num].music}</h1></div>',
+                        unsafe_allow_html=True)
+            st.markdown(f'<div style="text-align:center;"><a href="{df_music.iloc[num].link}">'
+                        f'<img src="{df_music.iloc[num].cover}" width="200"></a>'
+                        f'<p style="text-align:center; color:grey; font-size:10px;">Click image for more info</p></div>'
+                        f'<p style="text-align:center; font-size:20px;">{df_music.iloc[num].author}</p>',
+                        unsafe_allow_html=True)
     with col1:
         format_music_mark(0)
     with col2:
@@ -43,13 +44,14 @@ def display_trends_data():
     col1, col2, col3, col4, col5 = st.columns(5)
 
     def format_tiktok_mark(num):
-        st.markdown(f'<div style="text-align:center;"><a href="{df_tiktok.iloc[num].itemUrl}">'
-                    f'<img src="{df_tiktok.iloc[num].cover}" width="200"></a>'
-                    f'<p style="text-align:center; color:grey; font-size:10px;">Click image for more info</p></div>'
-                    f'<p style="text-align:center; font-size:15px;">id = {df_tiktok.iloc[num].id}</p>',
-                    unsafe_allow_html=True)
-        st.markdown(f'<div style="text-align:center;"><h1 style="font-size:15px;">{df_tiktok.iloc[num].title}</h1></div>',
-                    unsafe_allow_html=True)
+        if len(df_tiktok) != 0:
+            st.markdown(f'<div style="text-align:center;"><a href="{df_tiktok.iloc[num].itemUrl}">'
+                        f'<img src="{df_tiktok.iloc[num].cover}" width="200"></a>'
+                        f'<p style="text-align:center; color:grey; font-size:10px;">Click image for more info</p></div>'
+                        f'<p style="text-align:center; font-size:15px;">id = {df_tiktok.iloc[num].id}</p>',
+                        unsafe_allow_html=True)
+            st.markdown(f'<div style="text-align:center;"><h1 style="font-size:15px;">{df_tiktok.iloc[num].title}</h1></div>',
+                        unsafe_allow_html=True)
     with col1:
         format_tiktok_mark(0)
     with col2:

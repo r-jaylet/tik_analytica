@@ -74,14 +74,18 @@ def fetch_top_trends():
     tiktok = pd.DataFrame.from_records(tiktok_content)
 
     # format info
-    #hashtag['creators_examples'] = hashtag.apply(lambda x: ([e['nickName'] for e in x['creators']]), axis=1)
-    hashtag = music.copy()
-    music = music[['rank', 'cover', 'music', 'author', 'countryCode', 'songId', 'link']].set_index('rank')
-    creator['rank'] = list(np.arange(len(creator)))
-    creator = creator[['creator', 'followers_count', 'likes_count',
+    if len(hashtag) != 0:
+        hashtag['creators_examples'] = hashtag.apply(lambda x: ([e['nickName'] for e in x['creators']]), axis=1)
+        hashtag = hashtag[['rank', 'tag', 'posts_count', 'views_count', 'creators_examples']].set_index('rank')
+    if len(music) != 0:
+        music = music[['rank', 'cover', 'music', 'author', 'countryCode', 'songId', 'link']].set_index('rank')
+    if len(creator) != 0:
+        creator['rank'] = list(np.arange(len(creator)))
+        creator = creator[['creator', 'followers_count', 'likes_count',
                        'countryCode', 'userId', 'ttLink', 'rank']].set_index('rank')
-    tiktok['rank'] = list(np.arange(len(tiktok)))
-    tiktok = tiktok[['id', 'title', 'countryCode', 'duration', 'itemUrl', 'cover', 'rank']].set_index('rank')
+    if len(tiktok) != 0:
+        tiktok['rank'] = list(np.arange(len(tiktok)))
+        tiktok = tiktok[['id', 'title', 'countryCode', 'duration', 'itemUrl', 'cover', 'rank']].set_index('rank')
 
     return hashtag, music, creator, tiktok
 
