@@ -1,7 +1,7 @@
 import json
 import subprocess
 
-js_file = './scrap_tiktok'
+js_file = "'./scrap_tiktok'"
 
 
 def user(username):
@@ -17,7 +17,9 @@ def user(username):
     json_out : json_out
         json of user fetched with the TikTok signature API
     """
-    result = subprocess.run(f'node -e "require(\'{js_file}\').get_user(\'{username}\')"', capture_output=True, text=True)
+    username = "'taylorswift'"
+
+    result = subprocess.run(f'node -e "require({js_file}).get_user({username})"', capture_output=True, text=True)
     try:
         json_out = json.loads(result.stdout)
         return json_out
