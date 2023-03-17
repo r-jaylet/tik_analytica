@@ -1,7 +1,7 @@
 import json
 import subprocess
 
-js_file = "'./scrap_tiktok'"
+js_file = './scrap_tiktok'
 
 
 def user(username):
@@ -17,14 +17,9 @@ def user(username):
     json_out : json_out
         json of user fetched with the TikTok signature API
     """
-    username = "'taylorswift'"
-
-    result = subprocess.run(f'node -e "require({js_file}).get_user({username})"', capture_output=True, text=True)
-    try:
-        json_out = json.loads(result.stdout)
-        return json_out
-    except subprocess.CalledProcessError as e:
-        raise e
+    output = subprocess.check_output(f'node -e "require(\'{js_file}\').get_user(\'{username}\')"', shell=True)
+    json_out = json.loads(output.decode())
+    return json_out
 
 
 def user_videos(username):
@@ -40,12 +35,9 @@ def user_videos(username):
     json_out : json_out
         json of videos fetched with the TikTok signature API
     """
-    result = subprocess.run(f'node -e "require(\'{js_file}\').get_user_videos(\'{username}\')"', capture_output=True, text=True)
-    try:
-        json_out = json.loads(result.stdout)
-        return json_out
-    except subprocess.CalledProcessError as e:
-        raise e
+    output = subprocess.check_output(f'node -e "require(\'{js_file}\').get_user_videos(\'{username}\')"', shell=True)
+    json_out = json.loads(output.decode())
+    return json_out
 
 
 def hashtag(tag):
@@ -61,12 +53,9 @@ def hashtag(tag):
     json_out : json_out
         json of videos fetched with the TikTok signature API
     """
-    result = subprocess.run(f'node -e "require(\'{js_file}\').get_hashtag(\'{tag}\')"', capture_output=True, text=True)
-    try:
-        json_out = json.loads(result.stdout)
-        return json_out
-    except subprocess.CalledProcessError as e:
-        raise e
+    output = subprocess.check_output(f'node -e "require(\'{js_file}\').get_hashtag(\'{tag}\')"', shell=True)
+    json_out = json.loads(output.decode())
+    return json_out
 
 
 def music(url):
@@ -82,9 +71,6 @@ def music(url):
     json_out : json_out
         json of videos fetched with the TikTok signature API
     """
-    result = subprocess.run(f'node -e "require(\'{js_file}\').get_music(\'{url}\')"', capture_output=True, text=True)
-    try:
-        json_out = json.loads(result.stdout)
-        return json_out
-    except subprocess.CalledProcessError as e:
-        raise e
+    output = subprocess.check_output(f'node -e "require(\'{js_file}\').get_music(\'{url}\')"', shell=True)
+    json_out = json.loads(output.decode())
+    return json_out

@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from PIL import Image
 from datetime import datetime, timedelta
 import plotly.express as px
 
@@ -396,6 +397,27 @@ def display_music_data(music_):
     st.header('TikTok lists', anchor=None)
     st.dataframe(related_items)
 
+    st.header('In depth analysis', anchor=None)
+    st.caption('Analysis of the music')
+    col1, col2, col3 = st.columns(3)
+    data_song = pd.read_csv('./data/song_data').drop('Unnamed: 0', axis=1)
+    st.dataframe(data_song)
+
+    st.markdown("<div style='height:30px;'></div>", unsafe_allow_html=True)
+
+    with col1:
+        st.subheader('Genre decomposition')
+        image = Image.open('./data/song_genre.png')
+        st.image(image, caption='Evolution of genre throughout music', width=500)
+    with col2:
+        st.subheader('Instrumental decomposition')
+        image = Image.open('./data/song_instru.png')
+        st.image(image, caption='Recognition of instruments throughout music', width=520)
+    with col3:
+        st.subheader('Mood analysis')
+        image = Image.open('./data/song_type.png')
+        st.image(image, caption='Evolution of mood throughout music', width=300)
+
     st.markdown("<div style='height:50px;'></div>", unsafe_allow_html=True)
 
     st.download_button(
@@ -415,12 +437,13 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(['Top trends', 'Top influencers',
 with tab1:
     # Top trends page
     st.title('Top trends')
-    st.caption('Most important trends from the past 7 days around the world !')
+    st.write('Most important trends from the past 7 days around the world !')
     display_trends_data()
 
 with tab2:
     # Top influencers page
     st.title('Top influencers')
+    st.write('Most influential TikToker from around the world')
     option = st.selectbox(
         'Search for the following country?',
         ('USA', 'France', 'UK', 'Germany', 'Italy', 'Spain', 'Portugal'))
@@ -436,6 +459,7 @@ with tab2:
 with tab3:
     # User search page
     st.title('User Data')
+    st.write('Type in user to analyze')
     user_type = st.text_input(
         'Search for user',
         placeholder=' example : taylorswift, therock...',
@@ -446,6 +470,7 @@ with tab3:
 with tab4:
     # Hashtag search page
     st.title('Hashtag Data')
+    st.write('Type in challenge to analyze')
     tag_type = st.text_input(
         'Search for hashtag',
         placeholder=' example : jazz, rap...',
@@ -456,6 +481,7 @@ with tab4:
 with tab5:
     # Music search page
     st.title('Music Data')
+    st.write('Type in url of TikTok music to analyze')
     music_type = st.text_input(
         'Search for music',
         placeholder=' example : https://www.tiktok.com/@ayanakamura/video/7190099178314386693...',
