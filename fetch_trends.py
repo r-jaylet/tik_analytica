@@ -75,14 +75,20 @@ def fetch_top_trends():
 
     # format info
     if len(hashtag) != 0:
-        hashtag['creators_examples'] = hashtag.apply(lambda x: ([e['nickName'] for e in x['creators']]), axis=1)
+        nick_list = []
+        for h in range(len(hashtag)):
+            if type(hashtag.iloc[h]['creators']) != float:
+                nick_list.append([e['nickName'] for e in hashtag.iloc[h]['creators']])
+            else:
+                nick_list.append([])
+        hashtag['creators_examples'] = nick_list
         hashtag = hashtag[['rank', 'tag', 'posts_count', 'views_count', 'creators_examples']].set_index('rank')
     if len(music) != 0:
         music = music[['rank', 'cover', 'music', 'author', 'countryCode', 'songId', 'link']].set_index('rank')
     if len(creator) != 0:
         creator['rank'] = list(np.arange(len(creator)))
         creator = creator[['creator', 'followers_count', 'likes_count',
-                       'countryCode', 'userId', 'ttLink', 'rank']].set_index('rank')
+                           'countryCode', 'userId', 'ttLink', 'rank']].set_index('rank')
     if len(tiktok) != 0:
         tiktok['rank'] = list(np.arange(len(tiktok)))
         tiktok = tiktok[['id', 'title', 'countryCode', 'duration', 'itemUrl', 'cover', 'rank']].set_index('rank')
@@ -125,14 +131,13 @@ def hashtag_trend_info(hashtag, country_code, period):
     soup = BeautifulSoup(page.text, features='lxml')
     
     stats = [e.text for e in soup.find_all('span', {'class': 'title--gvWft title--eM6Wz'})]
-    trend = soup.find('span', {'class': 'sectionDesc--MeTTU sectionDesc--v0N+l'}).text
-    
+
     find_content = soup.find('script', id="__NEXT_DATA__")
     str_content = str(find_content).split('<')[1].split('>')[1]
     json_content = json.loads(str_content)['props']['pageProps']['data']
 
     trend_graph = pd.DataFrame.from_records(json_content['trend'])
-    trend_graph['time'] = pd.to_datetime(trend_graph.time, unit='s').astype(str)
+    trend_graph['time'] = pd.to_datetime(trend_graph.time, unit='s').astype(str) - datetime.del
     audience_ages = pd.DataFrame.from_records(json_content['audienceAges'])
     audience_ages['ageLevel'] = audience_ages['ageLevel'].replace(3, '18-24').replace(4, '25-34').replace(5, '35+')
     audience_countries = pd.DataFrame.from_records(json_content['audienceCountries'])
@@ -140,7 +145,7 @@ def hashtag_trend_info(hashtag, country_code, period):
     related_hashtags = pd.DataFrame.from_records(json_content['relatedHashtags'])
     related_items = pd.DataFrame.from_records(json_content['relatedItems'])
 
-    return stats, trend, trend_graph, audience_ages, audience_countries, related_hashtags, related_items
+    return stats, trend_graph, audience_ages, audience_countries, related_hashtags, related_items
 
 
 def music_trend_info(song, country_code, period):
@@ -172,8 +177,6 @@ def music_trend_info(song, country_code, period):
     page = requests.get(url)
     soup = BeautifulSoup(page.text, features='lxml')
 
-    trend = soup.find('span', {'class': 'sectionDesc--iGpw7 sectionDesc--OJ+RE'}).text
-
     find_content = soup.find('script', id="__NEXT_DATA__")
     str_content = str(find_content).split('<')[1].split('>')[1]
     json_content = json.loads(str_content)['props']['pageProps']['data']
@@ -186,7 +189,7 @@ def music_trend_info(song, country_code, period):
     audience_countries['countryInfo'] = audience_countries.apply(lambda x: x['countryInfo']['value'], axis=1)
     related_items = pd.DataFrame.from_records(json_content['relatedItems'])
 
-    return trend, trend_graph, audience_ages, audience_countries, related_items
+    return trend_graph, audience_ages, audience_countries, related_items
 
 
 def fetch_top_influencers(country_code='fr'):

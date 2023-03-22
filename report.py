@@ -226,8 +226,8 @@ def display_user_data(username_):
 
 def display_hashtag_data(tag_):
     country = 'FR'
-    period = '120'
-    stats, trend, trend_graph, audience_ages, audience_countries, related_hashtags, related_items = hashtag_trend_info(tag_, country, period)
+    period = '30'
+    stats, trend_graph, audience_ages, audience_countries, related_hashtags, related_items = hashtag_trend_info(tag_, country, period)
 
     st.header(f'Post stats in {country}', anchor=None)
     col1, col2 = st.columns(2)
@@ -240,9 +240,8 @@ def display_hashtag_data(tag_):
         st.metric(label="Number of views overall", value=stats[3])
 
     st.header('Trend analysis', anchor=None)
-    st.caption(trend)
     st.subheader('Evolution of the index of the video views relative to peak popularity')
-    fig = px.area(trend_graph, x="time", y="value", width=1500, height=300)
+    fig = px.area(trend_graph, x="time", y="value", width=1400, height=300)
     fig.update_xaxes(dtick="M1", tickformat="%d %B")
     st.plotly_chart(fig)
 
@@ -347,8 +346,8 @@ def display_music_data(music_):
 
     music_tag = f'{df_music[0].title}-{df_music[0].id}'
     country = 'FR'
-    period = '120'
-    trend, trend_graph, audience_ages, audience_countries, related_items = music_trend_info(music_tag, country, period)
+    period = '30'
+    trend_graph, audience_ages, audience_countries, related_items = music_trend_info(music_tag, country, period)
 
     st.header('Music info', anchor=None)
     col1, col2 = st.columns(2)
@@ -375,9 +374,9 @@ def display_music_data(music_):
         ''', unsafe_allow_html=True)
 
     st.header('Trend analysis', anchor=None)
-    st.caption(trend)
     st.subheader('Evolution of the index of the video views relative to peak popularity')
-    fig = px.area(trend_graph, x="time", y="value", width=1500, height=300)
+
+    fig = px.area(trend_graph, x="time", y="value", width=1400, height=300)
     fig.update_xaxes(dtick="M1", tickformat="%d %B")
     st.plotly_chart(fig)
 
@@ -395,28 +394,98 @@ def display_music_data(music_):
         st.plotly_chart(fig)
 
     st.header('TikTok lists', anchor=None)
-    st.dataframe(related_items)
+    st.dataframe(related_items, width=1300, height=300)
 
     st.header('In depth analysis', anchor=None)
     st.caption('Analysis of the music')
-    col1, col2, col3 = st.columns(3)
     data_song = pd.read_csv('./data/song_data').drop('Unnamed: 0', axis=1)
     st.dataframe(data_song)
 
-    st.markdown("<div style='height:30px;'></div>", unsafe_allow_html=True)
+    st.subheader('Genre decomposition')
 
-    with col1:
-        st.subheader('Genre decomposition')
-        image = Image.open('./data/song_genre.png')
-        st.image(image, caption='Evolution of genre throughout music', width=500)
-    with col2:
-        st.subheader('Instrumental decomposition')
-        image = Image.open('./data/song_instru.png')
-        st.image(image, caption='Recognition of instruments throughout music', width=520)
-    with col3:
-        st.subheader('Mood analysis')
-        image = Image.open('./data/song_type.png')
-        st.image(image, caption='Evolution of mood throughout music', width=300)
+    Rock = [0.73, 0.73, 0.76, 0.79,
+            0.78, 0.73, 0.76, 0.81,
+            0.73, 0.79, 0.66, 0.63,
+            0.74, 0.73, 0.76, 0.52,
+            0.52, 0.42]
+    Pop = [0.43, 0.41, 0.49, 0.59,
+           0.38, 0.33, 0.36, 0.33,
+           0.43, 0.49, 0.16, 0.35,
+           0.47, 0.42, 0.18, 0.32,
+           0.34, 0.22]
+    Singer = [0.13, 0.11, 0.39, 0.39,
+              0.18, 0.31, 0.26, 0.23,
+              0.13, 0.19, 0.21, 0.15,
+              0.17, 0.32, 0.18, 0.12,
+              0.14, 0.12]
+    time = ['0:00', '0:15', '0:30', '0:45',
+            '1:00', '1:15', '1:30', '1:45',
+            '2:00', '2:15', '2:30', '2:45',
+            '3:00', '3:15', '3:30', '3:45',
+            '4:00', '4:15']
+
+    df_mus_cya = pd.DataFrame(list(zip(time, Rock, Pop, Singer)), columns=['time', 'Rock', 'Pop', 'Singer']).set_index(
+        'time')
+    df_mus_cya['RnB'] = [0] * 18
+    df_mus_cya['Jazz'] = [0] * 18
+    df_mus_cya['Blues'] = [0] * 18
+    df_mus_cya['Metal'] = [0] * 18
+    df_mus_cya['Reggae'] = [0] * 18
+    df_mus_cya['Electro'] = [0] * 18
+    df_mus_cya['Rap'] = [0] * 18
+    df_mus_cya['Classic'] = [0] * 18
+    df_mus_cya['Electro'] = [0] * 18
+    fig = px.line(df_mus_cya, width=1400, height=500)
+    st.plotly_chart(fig)
+
+    st.subheader('Instrumental decomposition')
+    Acoustic_Guitar = [0.43, 0.43, 0.86, 0.69,
+                       0.28, 0.63, 0.76, 0.41,
+                       0.23, 0.69, 0.46, 0.73,
+                       0.64, 0.63, 0.26, 0.52,
+                       0.42, 0.42]
+    Bass = [0.03, 0.01, 0.09, 0.09,
+            0.08, 0.03, 0.06, 0.13,
+            0.23, 0.19, 0.16, 0.05,
+            0.07, 0.02, 0.08, 0.02,
+            0.34, 0.22]
+    Bass_Guitar = [0.53, 0.51, 0.79, 0.79,
+                   0.58, 0.51, 0.76, 0.73,
+                   0.63, 0.79, 0.61, 0.75,
+                   0.57, 0.72, 0.38, 0.32,
+                   0.34, 0.32]
+    Electric_Guitar = [0.23, 0.23, 0.76, 0.69,
+                       0.88, 0.93, 0.86, 0.61,
+                       0.93, 0.89, 0.86, 0.53,
+                       0.94, 0.63, 0.46, 0.32,
+                       0.22, 0.12]
+    Percussion = [0.83, 0.81, 0.89, 0.89,
+                  0.88, 0.93, 0.96, 0.93,
+                  0.93, 0.89, 0.86, 0.85,
+                  0.87, 0.82, 0.88, 0.82,
+                  0.34, 0.22]
+    Piano = [0.63, 0.61, 0.65, 0.69,
+             0.58, 0.55, 0.56, 0.54,
+             0.63, 0.69, 0.68, 0.67,
+             0.70, 0.72, 0.88, 0.42,
+             0.31, 0.20]
+    Synth = [0.43, 0.51, 0.56, 0.54,
+             0.58, 0.16, 0.46, 0.63,
+             0.73, 0.49, 0.41, 0.35,
+             0.27, 0.32, 0.38, 0.32,
+             0.39, 0.30]
+
+    time = ['0:00', '0:15', '0:30', '0:45',
+            '1:00', '1:15', '1:30', '1:45',
+            '2:00', '2:15', '2:30', '2:45',
+            '3:00', '3:15', '3:30', '3:45',
+            '4:00', '4:15']
+    df_sty_cya = pd.DataFrame(
+        list(zip(time, Acoustic_Guitar, Bass, Bass_Guitar, Electric_Guitar, Percussion, Piano, Synth)),
+        columns=['time', 'Acoustic_Guitar', 'Bass', 'Bass_Guitar', 'Electric_Guitar', 'Percussion', 'Piano',
+                 'Synth']).set_index('time')
+    fig = px.line(df_sty_cya, width=1400, height=500)
+    st.plotly_chart(fig)
 
     st.markdown("<div style='height:50px;'></div>", unsafe_allow_html=True)
 
